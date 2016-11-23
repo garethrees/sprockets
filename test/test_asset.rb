@@ -601,6 +601,19 @@ class BundledAssetTest < Sprockets::TestCase
       asset("application.js").to_a.map(&:pathname)
   end
 
+  test "asset with scss dependencies" do
+    @env.prepend_path(fixture_path('default'))
+    assert_equal [resolve("custom.scss")],
+      asset("main.scss").dependencies.map(&:pathname)
+  end
+
+  test "asset with scss override dependencies" do
+    @env.prepend_path(fixture_path('default'))
+    @env.prepend_path(fixture_path('override'))
+    assert_equal [resolve("custom.scss")],
+      asset("main.scss").dependencies.map(&:pathname)
+  end
+
   test "bundled asset body is just its own contents" do
     assert_equal "\n\n\ndocument.on('dom:loaded', function() {\n  $('search').focus();\n});\n",
       asset("application.js").body
