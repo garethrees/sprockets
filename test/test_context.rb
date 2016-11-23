@@ -48,6 +48,16 @@ class TestContext < Sprockets::TestCase
     assert_equal main_css_path, resolve('main', accept: 'text/css')
   end
 
+  test "resolve @import override scss" do
+    @env = Sprockets::Environment.new(".")
+    @env.prepend_path(fixture_path_for_uri('default'))
+    @env.prepend_path(fixture_path_for_uri('override'))
+
+    # Check that we get the correct path for the main css
+    custom_css_path = Pathname.new(fixture_path_for_uri('override/custom.scss'))
+    assert_equal custom_css_path, resolve('custom', accept: 'text/css')
+  end
+
   def resolve(path, options = {})
     uri, _ = @env.resolve(path, options.merge(compat: false))
     uri
