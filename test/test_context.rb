@@ -58,6 +58,17 @@ class TestContext < Sprockets::TestCase
     assert_equal custom_css_path, resolve('custom', accept: 'text/css')
   end
 
+  test "resolve and render @import override" do
+    @env = Sprockets::Environment.new(".")
+    @env.prepend_path(fixture_path_for_uri('default'))
+    @env.prepend_path(fixture_path_for_uri('override'))
+
+    assert_equal <<-EOS, @env.find_asset(resolve('main', accept: 'text/css')).to_s
+overridden {
+  color: purple; }
+    EOS
+  end
+
   def resolve(path, options = {})
     uri, _ = @env.resolve(path, options.merge(compat: false))
     uri
