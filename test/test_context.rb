@@ -37,6 +37,21 @@ class TestContext < Sprockets::TestCase
       @env["helpers.css"].to_s.lines.to_a[0..1].join
     assert_equal 58240, @env["helpers.css"].length
   end
+
+  test "resolve main scss" do
+    @env = Sprockets::Environment.new(".")
+    @env.prepend_path(fixture_path_for_uri('default'))
+    @env.prepend_path(fixture_path_for_uri('override'))
+
+    # Check that we get the correct path for the main css
+    main_css_path = Pathname.new(fixture_path_for_uri('default/main.scss'))
+    assert_equal main_css_path, resolve('main', accept: 'text/css')
+  end
+
+  def resolve(path, options = {})
+    uri, _ = @env.resolve(path, options.merge(compat: false))
+    uri
+  end
 end
 
 class TestCustomProcessor < Sprockets::TestCase
